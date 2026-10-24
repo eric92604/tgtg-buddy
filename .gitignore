@@ -1,0 +1,27 @@
+# Local data & secrets
+data/
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtual env
+.venv/
+venv/
+
+# Tooling / IDE
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.idea/
+.vscode/
+*.swp
+.DS_Store

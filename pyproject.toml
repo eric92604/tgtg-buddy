@@ -1,0 +1,36 @@
+[project]
+name = "tgtg-buddy"
+version = "0.1.0"
+description = "Single-user TGTG Buddy: smart polling, auto-order, Tailscale UI"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "tgtg",
+    "fastapi",
+    "uvicorn[standard]",
+    "jinja2",
+    "cryptography",
+    "aiosmtplib",
+    "httpx",
+    "bcrypt",
+    "itsdangerous",
+    "python-multipart",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
