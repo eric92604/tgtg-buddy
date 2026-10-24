@@ -65,6 +65,11 @@ def _ctx(request: Request, **extra: Any) -> dict[str, Any]:
     }
 
 
+def _render(request: Request, name: str, **extra: Any) -> HTMLResponse:
+    # Starlette 1.x: TemplateResponse(request, name, context)
+    return templates.TemplateResponse(request, name, _ctx(request, **extra))
+
+
 def _make_client() -> BuddyClient:
     tokens = secrets_mod.get_tgtg_tokens()
     cfg = config_mod.load_config()
@@ -148,7 +153,7 @@ async def root(request: Request):
 async def setup_get(request: Request):
     if not is_first_run():
         return RedirectResponse("/login", status_code=303)
-    return templates.TemplateResponse("setup.html", _ctx(request, show_nav=False))
+    return _render(request, "setup.html", show_nav=False)
 
 
 @app.post("/setup")
@@ -177,7 +182,7 @@ async def login_get(request: Request):
         return RedirectResponse("/setup", status_code=303)
     if is_authenticated(request):
         return RedirectResponse("/favorites", status_code=303)
-    return templates.TemplateResponse("login.html", _ctx(request, show_nav=False))
+    return _render(request, "login.html", show_nav=False)
 
 
 @app.post("/login")
@@ -200,14 +205,12 @@ async def logout(request: Request):
 @app.get("/tgtg", response_class=HTMLResponse)
 async def tgtg_get(request: Request):
     tokens = secrets_mod.get_tgtg_tokens()
-    return templates.TemplateResponse(
+    return _render(
+        request,
         "tgtg_login.html",
-        _ctx(
-            request,
-            linked=bool(tokens.get("access_token")),
-            email=tokens.get("email") or _tgtg_pending.get("email"),
-            polling_id=_tgtg_pending.get("polling_id"),
-        ),
+        linked=bool(tokens.get("access_token")),
+        email=tokens.get("email") or _tgtg_pending.get("email"),
+        polling_id=_tgtg_pending.get("polling_id"),
     )
 
 
@@ -284,9 +287,11 @@ async def favorites_get(request: Request):
             }
             for w in watched
         ]
-    return templates.TemplateResponse(
+    return _render(
+        request,
         "favorites.html",
-        _ctx(request, favorites=favorites, watched_map=watched_map),
+        favorites=favorites,
+        watched_map=watched_map,
     )
 
 
@@ -382,26 +387,24 @@ async def upcoming_get(request: Request):
             }
         )
     rows.sort(key=lambda r: r.get("next_window") or "9999")
-    return templates.TemplateResponse("upcoming.html", _ctx(request, rows=rows))
+    return _render(request, "upcoming.html", rows=rows)
 
 
 @app.get("/orders", response_class=HTMLResponse)
 async def orders_get(request: Request):
     orders = list(reversed(load_orders()))
-    return templates.TemplateResponse("orders.html", _ctx(request, orders=orders))
+    return _render(request, "orders.html", orders=orders)
 
 
 @app.get("/settings", response_class=HTMLResponse)
 async def settings_get(request: Request):
     cfg = config_mod.load_config()
-    return templates.TemplateResponse(
+    return _render(
+        request,
         "settings.html",
-        _ctx(
-            request,
-            cfg=cfg,
-            smtp_password_set=bool(secrets_mod.get_smtp_password()),
-            card_set=secrets_mod.card_configured(),
-        ),
+        cfg=cfg,
+        smtp_password_set=bool(secrets_mod.get_smtp_password()),
+        card_set=secrets_mod.card_configured(),
     )
 
 
