@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Favorites — TGTG Buddy{% endblock %}
+{% block content %}
+<h1>Favorites</h1>
+<p class="lead">Toggle which favorites Buddy watches, with qty and max price.</p>
+
+<div class="card actions">
+  <form method="post" action="/favorites/refresh">
+    <button type="submit">Refresh from TGTG</button>
+  </form>
+</div>
+
+{% if not favorites %}
+  <div class="card muted">No favorites loaded. Link TGTG and refresh, or check your app favorites.</div>
+{% endif %}
+
+{% for fav in favorites %}
+  {% set iid = fav.item_id %}
+  {% set w = watched_map.get(iid) %}
+  <div class="card">
+    <strong>{{ fav.display_name }}</strong>
+    <div class="muted">id {{ iid }} · stock {{ fav.items_available }}</div>
+    {% if fav.price is not none %}
+      <div class="muted">~ {{ '%.2f'|format(fav.price) }}</div>
+    {% endif %}
+    <form method="post" action="/favorites/watch">
+      <input type="hidden" name="item_id" value="{{ iid }}" />
+      <input type="hidden" name="display_name" value="{{ fav.display_name }}" />
+      <div class="row">
+        <div>
+          <label>Qty</label>
+          <input name="qty" type="number" min="1" max="10" value="{{ w.qty if w else 1 }}" />
+        </div>
+        <div>
+          <label>Max price (empty = no limit)</label>
+          <input name="max_price" type="number" step="0.01" min="0"
+                 value="{{ w.max_price if w and w.max_price is not none else '' }}" />
+        </div>
+      </div>
+      <div class="actions">
+        {% if w %}
+          <button type="submit" name="action" value="update">Update</button>
+          <button type="submit" name="action" value="unwatch" class="secondary">Unwatch</button>
+          <span class="badge">watching</span>
+          {% if w.next_window %}<span class="muted">next {{ w.next_window }}</span>{% endif %}
+        {% else %}
+          <button type="submit" name="action" value="watch">Watch</button>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+{% endfor %}
+{% endblock %}

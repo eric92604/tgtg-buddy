@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}TGTG Login — TGTG Buddy{% endblock %}
+{% block content %}
+<h1>TGTG account</h1>
+<p class="lead">Log in with email + PIN (auth v5). Tokens are stored encrypted in <code>secrets.enc</code>.</p>
+
+<div class="card">
+  <p>Status:
+    {% if linked %}
+      <span class="badge">linked{% if email %} · {{ email }}{% endif %}</span>
+    {% else %}
+      <span class="badge warn">not linked</span>
+    {% endif %}
+  </p>
+  {% if linked %}
+  <form method="post" action="/tgtg/logout" class="actions">
+    <button type="submit" class="danger">Clear TGTG tokens</button>
+  </form>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">1. Request PIN</h2>
+  <form method="post" action="/tgtg/email">
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" required value="{{ email or '' }}" />
+    <button type="submit">Send PIN</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">2. Enter PIN</h2>
+  <form method="post" action="/tgtg/pin">
+    <label for="pin">PIN from email</label>
+    <input id="pin" name="pin" type="text" inputmode="numeric" required autocomplete="one-time-code" />
+    <input type="hidden" name="polling_id" value="{{ polling_id or '' }}" />
+    <button type="submit">Verify PIN</button>
+  </form>
+</div>
+{% endblock %}

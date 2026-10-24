@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Setup — TGTG Buddy{% endblock %}
+{% block content %}
+<h1>First-run setup</h1>
+<p class="lead">Set the single app password that protects this Tailscale-only UI.</p>
+<div class="card">
+  <form method="post" action="/setup">
+    <label for="password">App password</label>
+    <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password" />
+    <label for="password2">Confirm password</label>
+    <input id="password2" name="password2" type="password" required minlength="8" autocomplete="new-password" />
+    <button type="submit">Create password</button>
+  </form>
+</div>
+{% endblock %}

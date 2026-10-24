@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Upcoming — TGTG Buddy{% endblock %}
+{% block content %}
+<h1>Upcoming windows</h1>
+<p class="lead">Predicted release times and warm / burst / tail phases.</p>
+
+{% if not rows %}
+  <div class="card muted">No watched items with a predicted window yet.</div>
+{% endif %}
+
+{% for row in rows %}
+  <div class="card">
+    <strong>{{ row.display_name }}</strong>
+    <div class="muted">T = {{ row.next_window or 'unknown' }}</div>
+    {% if row.phases %}
+    <table>
+      <thead><tr><th>Phase</th><th>Start</th><th>End</th><th>Interval</th></tr></thead>
+      <tbody>
+      {% for p in row.phases %}
+        <tr>
+          <td>{% if p.active %}<span class="badge">{{ p.name }}</span>{% else %}{{ p.name }}{% endif %}</td>
+          <td>{{ p.start }}</td>
+          <td>{{ p.end }}</td>
+          <td>{{ p.interval[0] }}–{{ p.interval[1] }}s</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+{% endfor %}
+{% endblock %}

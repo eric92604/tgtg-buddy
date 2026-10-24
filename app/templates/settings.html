@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Settings — TGTG Buddy{% endblock %}
+{% block content %}
+<h1>Settings</h1>
+<p class="lead">Dry-run, pause, spend cap, SMTP, and card (encrypted).</p>
+
+<form method="post" action="/settings">
+  <div class="card">
+    <h2 style="margin-top:0">Behavior</h2>
+    <label><input type="checkbox" name="dry_run" value="1" {% if cfg.dry_run %}checked{% endif %} /> Dry-run (reserve then abort)</label>
+    <label><input type="checkbox" name="pause" value="1" {% if cfg.pause %}checked{% endif %} /> Pause scheduler</label>
+    <label for="daily_spend_cap">Daily spend cap (0 = unlimited)</label>
+    <input id="daily_spend_cap" name="daily_spend_cap" type="number" step="0.01" min="0" value="{{ cfg.daily_spend_cap }}" />
+    <label for="adyen_client_key">Adyen client key override (optional)</label>
+    <input id="adyen_client_key" name="adyen_client_key" type="text" value="{{ cfg.adyen_client_key or '' }}" />
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">SMTP</h2>
+    <div class="row">
+      <div>
+        <label for="smtp_host">Host</label>
+        <input id="smtp_host" name="smtp_host" value="{{ cfg.smtp.host }}" />
+      </div>
+      <div>
+        <label for="smtp_port">Port</label>
+        <input id="smtp_port" name="smtp_port" type="number" value="{{ cfg.smtp.port }}" />
+      </div>
+    </div>
+    <label for="smtp_username">Username</label>
+    <input id="smtp_username" name="smtp_username" value="{{ cfg.smtp.username }}" />
+    <label for="smtp_password">Password {% if smtp_password_set %}(leave blank to keep){% endif %}</label>
+    <input id="smtp_password" name="smtp_password" type="password" autocomplete="new-password" />
+    <div class="row">
+      <div>
+        <label for="smtp_from">From</label>
+        <input id="smtp_from" name="smtp_from" value="{{ cfg.smtp.from_addr }}" />
+      </div>
+      <div>
+        <label for="smtp_to">To</label>
+        <input id="smtp_to" name="smtp_to" value="{{ cfg.smtp.to_addr }}" />
+      </div>
+    </div>
+    <label><input type="checkbox" name="smtp_use_tls" value="1" {% if cfg.smtp.use_tls %}checked{% endif %} /> STARTTLS</label>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">Card (live pay)</h2>
+    <p class="muted">Stored encrypted. {% if card_set %}Card on file.{% else %}No card saved.{% endif %}</p>
+    <label for="card_number">Number</label>
+    <input id="card_number" name="card_number" type="text" inputmode="numeric" autocomplete="off" placeholder="{% if card_set %}•••• (leave blank to keep){% endif %}" />
+    <div class="row">
+      <div>
+        <label for="card_month">Month</label>
+        <input id="card_month" name="card_month" placeholder="MM" />
+      </div>
+      <div>
+        <label for="card_year">Year</label>
+        <input id="card_year" name="card_year" placeholder="YYYY" />
+      </div>
+    </div>
+    <label for="card_cvv">CVV</label>
+    <input id="card_cvv" name="card_cvv" type="password" autocomplete="off" />
+    <label for="card_holder">Holder</label>
+    <input id="card_holder" name="card_holder" />
+  </div>
+
+  <button type="submit">Save settings</button>
+</form>
+
+<div class="card">
+  <h2 style="margin-top:0">Test email</h2>
+  <form method="post" action="/settings/test-email">
+    <button type="submit" class="secondary">Send test email</button>
+  </form>
+</div>
+{% endblock %}

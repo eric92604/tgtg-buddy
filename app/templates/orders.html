@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Orders — TGTG Buddy{% endblock %}
+{% block content %}
+<h1>Orders &amp; events</h1>
+<p class="lead">Recent reserve / pay / dry-run attempts (capped).</p>
+
+<div class="card">
+  {% if not orders %}
+    <p class="muted">No events yet.</p>
+  {% else %}
+  <table>
+    <thead>
+      <tr><th>When</th><th>Item</th><th>Result</th><th>Detail</th></tr>
+    </thead>
+    <tbody>
+    {% for o in orders %}
+      <tr>
+        <td>{{ o.ts }}</td>
+        <td>{{ o.display_name or o.item_id }}</td>
+        <td>
+          {% if o.result in ('paid', 'dry_run_ok') %}
+            <span class="badge">{{ o.result }}</span>
+          {% elif o.result == 'reserved_3ds' %}
+            <span class="badge warn">{{ o.result }}</span>
+          {% elif o.result in ('pay_failed', 'reserve_failed') %}
+            <span class="badge danger">{{ o.result }}</span>
+          {% else %}
+            <span class="badge">{{ o.result }}</span>
+          {% endif %}
+        </td>
+        <td class="muted">
+          {% if o.reason %}{{ o.reason }}{% endif %}
+          {% if o.price is not none %} · {{ '%.2f'|format(o.price) }}{% endif %}
+          {% if o.error %} · {{ o.error }}{% endif %}
+          {% if o.order_id %} · {{ o.order_id }}{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+{% endblock %}

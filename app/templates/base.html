@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}TGTG Buddy{% endblock %}</title>
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <style>
+    :root {
+      --bg: #0f1410;
+      --panel: #1a221c;
+      --text: #e8f0ea;
+      --muted: #8fa396;
+      --accent: #3d9a5f;
+      --accent-2: #c4e0b0;
+      --danger: #d96b5c;
+      --border: #2a362e;
+      --warn: #d4a84b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(1200px 600px at 10% -10%, #1d3324 0%, var(--bg) 55%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    a { color: var(--accent-2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(15, 20, 16, 0.85);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .brand { font-weight: 700; letter-spacing: 0.02em; }
+    nav { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    nav a { color: var(--muted); font-size: 0.95rem; }
+    nav a.active, nav a:hover { color: var(--text); }
+    main { max-width: 920px; margin: 0 auto; padding: 1.25rem; }
+    h1 { font-size: 1.5rem; margin: 0 0 0.5rem; }
+    h2 { font-size: 1.1rem; margin: 1.5rem 0 0.75rem; color: var(--accent-2); }
+    p.lead { color: var(--muted); margin-top: 0; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      margin: 0.75rem 0;
+    }
+    label { display: block; font-size: 0.85rem; color: var(--muted); margin: 0.6rem 0 0.25rem; }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.55rem 0.65rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #121812;
+      color: var(--text);
+      font-size: 1rem;
+    }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
+    button, .btn {
+      display: inline-block;
+      margin-top: 0.85rem;
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
+      border: none;
+      background: var(--accent);
+      color: #041008;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button.secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    button.danger { background: var(--danger); color: #1a0907; }
+    .flash {
+      padding: 0.65rem 0.8rem;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      background: #243028;
+      border: 1px solid var(--border);
+    }
+    .flash.error { border-color: var(--danger); color: #ffd5cf; }
+    .flash.ok { border-color: var(--accent); }
+    .flash.warn { border-color: var(--warn); color: #ffe7b0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    th, td { text-align: left; padding: 0.5rem 0.4rem; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 500; }
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: #243028;
+      color: var(--accent-2);
+    }
+    .badge.warn { background: #3a3018; color: #ffe7b0; }
+    .badge.danger { background: #3a1c18; color: #ffd5cf; }
+    .muted { color: var(--muted); }
+    .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+    .actions form { display: inline; margin: 0; }
+    .actions button { margin-top: 0; }
+  </style>
+</head>
+<body>
+  {% if show_nav %}
+  <header>
+    <div class="brand">TGTG Buddy</div>
+    <nav>
+      <a href="/favorites" class="{% if request.url.path == '/favorites' %}active{% endif %}">Favorites</a>
+      <a href="/upcoming" class="{% if request.url.path == '/upcoming' %}active{% endif %}">Upcoming</a>
+      <a href="/orders" class="{% if request.url.path == '/orders' %}active{% endif %}">Orders</a>
+      <a href="/settings" class="{% if request.url.path == '/settings' %}active{% endif %}">Settings</a>
+      <a href="/tgtg" class="{% if request.url.path == '/tgtg' %}active{% endif %}">TGTG Login</a>
+      <a href="/logout">Logout</a>
+    </nav>
+  </header>
+  {% endif %}
+  <main>
+    {% if flash %}
+      <div class="flash {{ flash.kind }}">{{ flash.message }}</div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
