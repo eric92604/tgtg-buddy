@@ -1,0 +1,15 @@
+services:
+  tgtg-buddy:
+    build: .
+    image: tgtg-buddy:local
+    container_name: tgtg-buddy
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATA_DIR: /app/data
+    volumes:
+      - ./data:/app/data
+    # Publish UI only on the Tailscale interface — never 0.0.0.0 on the host.
+    ports:
+      - "${TAILSCALE_IP}:8321:8321"
